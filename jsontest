@@ -1,0 +1,7 @@
+#!/bin/bash
+
+curl -s http://ifconfig.co/json | jq . > json.out
+
+IP=$(jq .ip json.out)
+
+eval echo $IP
