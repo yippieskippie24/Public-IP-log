@@ -3,5 +3,7 @@
 curl -s http://ifconfig.co/json | jq . > json.out
 
 IP=$(jq .ip json.out)
+country=$(jq .country json.out)
+region=$(jq .region_name json.out)
 
 eval echo $IP
