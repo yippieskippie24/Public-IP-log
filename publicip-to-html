@@ -86,13 +86,10 @@ $date
 EOF
 
 #*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
-#                 Prepend to log file                     #
+#                  Append to log file                     #
 #*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
 
 cp /var/www/html/current-ip/log.txt /var/www/html/current-ip/log.txt.bak
-touch /var/www/html/current-ip/log.txt
-rm /var/www/html/current-ip/log.txt
 echo "$date | $country | $region | $IP" >> /var/www/html/current-ip/log.txt
-cat /var/www/html/current-ip/log.txt.bak >> /var/www/html/current-ip/log.txt
 
 #*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#
