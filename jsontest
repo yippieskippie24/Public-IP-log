@@ -7,3 +7,4 @@ country=$(jq .country json.out)
 region=$(jq .region_name json.out)
 
 eval echo $IP
+
