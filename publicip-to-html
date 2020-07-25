@@ -1,29 +1,65 @@
 #!/bin/bash
 
 
-rm /var/www/html/index.html
-cp /var/www/html/log.txt /var/www/html/log.txt.bak
-json=$(curl -s http://ifconfig.co/json | jq .)
+
+#define all variables used in this script
 
 date=$(date)
-IP=$(curl -s ifconfig.co/ip)
-country=$(curl -s ifconfig.co/country)
+messyIP=""
+IP=""
+messycountry=""
+country=""
+messyregion=""
+region=""
 
-echo "<!DOCTYPE html>" >> /var/www/html/index.html
-echo "<html>" >> /var/www/html/index.html
-echo "<body>" >> /var/www/html/index.html
-echo "<h1>Current Public IP</h1>" >> /var/www/html/index.html
-echo "<h1>$IP</h1>" >> /var/www/html/index.html
-echo "<br>" >> /var/www/html/index.html
-echo "Country: $country" >> /var/www/html/index.html
-echo "<br>" >> /var/www/html/index.html
-echo "$date" >> /var/www/html/index.html
-echo "<br>" >> /var/www/html/index.html
-echo "<p><a href="http://10.0.200.202/log.txt">View Logs</a></p>" >> /var/www/html/index.html
-echo "</body>" >> /var/www/html/index.html
-echo "</html>" >> /var/www/html/index.html
+#####################################################
 
+#get public IP info and save it as 'json.out'
 
-rm /var/www/html/log.txt
-echo "$date | $country | $IP" >> /var/www/html/log.txt
-cat /var/www/html/log.txt.bak >> /var/www/html/log.txt
+curl -s http://ifconfig.co/json | jq . > json.out
+
+#clean up output and save it as useable variables
+
+messyIP=$(jq .ip json.out)
+messycountry=$(jq .country json.out)
+messyregion=$(jq .region_name json.out)
+
+IP=$(eval echo $messyIP)
+country=$(eval echo $messycountry)
+region=$(eval echo $messyregion)
+
+######################################################
+#Delete existing index.html file
+touch /var/www/html/current-ip/index.html
+rm /var/www/html/current-ip/index.html
+
+#build new index.html file based on collected variables
+
+cat > /var/www/html/current-ip/index.html << EOF
+
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Current Public IP</h1>
+<h1>$IP</h1>
+<br>
+Country: $country
+<br>
+Region: $region
+<br>
+$date
+<br>
+<p><a href=log.txt>View Logs</a></p>
+</body>
+</html>
+EOF
+
+######################################################
+#Prepend to log file
+
+cp /var/www/html/current-ip/log.txt /var/www/html/current-ip/log.txt.bak
+touch /var/www/html/current-ip/log.txt
+rm /var/www/html/current-ip/log.txt
+echo "$date | $country | $region | $IP" >> /var/www/html/current-ip/log.txt
+cat /var/www/html/current-ip/log.txt.bak >> /var/www/html/current-ip/log.txt
+######################################################
